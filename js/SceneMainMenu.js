@@ -3,7 +3,7 @@ class SceneMainMenu extends Phaser.Scene {
         super({ key: "SceneMainMenu" });
     }
 
-    preload() {
+    preload() { //chargement bouton et son
         this.load.image("sprBtnPlay", "content/sprBtnPlay.png");
         this.load.image("sprBtnPlayHover", "content/sprBtnPlayHover.png");
 
@@ -11,7 +11,7 @@ class SceneMainMenu extends Phaser.Scene {
     }
 
     create() {
-
+        // ajouter l'objet sfx qui contiendra le son du bouton
         this.sfx = {
             btn: this.sound.add("sndBtn"),
         };
@@ -21,6 +21,8 @@ class SceneMainMenu extends Phaser.Scene {
             this.game.config.height * 0.5,
             "sprBtnPlay"
         );
+
+        //event pointer
         this.btnPlay.setInteractive();
 
         this.btnPlay.on("pointerover", function() {

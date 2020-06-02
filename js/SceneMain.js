@@ -3,7 +3,7 @@ class SceneMain extends Phaser.Scene {
 		super({ key: "SceneMain" });
 	}
 
-	preload() {
+	preload() { // ajout des images dans la méthode de préchargement
         this.load.image("sprWall", "content/sprWall.png");
         this.load.image("sprCeiling", "content/sprCeiling.png");
         this.load.image("sprBrick", "content/sprBrick.png");
@@ -12,17 +12,18 @@ class SceneMain extends Phaser.Scene {
         
         this.load.audio("sndWallHit", "content/sndWallHit.wav");
 
-        for (var i = 0; i < 4; i++) {
+        for (var i = 0; i < 4; i++) { // Puis le code de chargement de nos 4 sons quand la balle touche une brique
             this.load.audio("sndBrickHit" + i, "content/sndBrickHit"  + i + ".wav");
         }
 
 	}
 
+    // ajout le nombre spécifique au score du joueur
 	addScore(amount) {
         this.score += amount;
         this.textScore.setText(this.score);        
 	}
-
+    // cette fonction permet de cr'éer la scène du jeu donc les murs etc
 	createStage() {
         var wallLeft = new Wall(this, 0, 0, "sprWall");
         this.walls.add(wallLeft);
@@ -34,6 +35,7 @@ class SceneMain extends Phaser.Scene {
         this.walls.add(wallCeiling);        
 	}
 
+    // on va ajouter un système de file d'attente , il ajoute des objets de ligne à  un tableau qui sera la file d'attente et aussi avec un systeme de minuterie
 	addRowsToQueue(amount, isEmpty) {
         isEmpty = isEmpty | false;
 
@@ -56,16 +58,17 @@ class SceneMain extends Phaser.Scene {
         }
 	}
 
+    // elle va générer une quantité spécifié de briques
 	generateRows(amount) {
         amount = amount | 1;
 
         for (var i = 0; i < amount; i++) {
             if (this.rowQueue.length > 0) {
                 
-                if (!this.rowQueue[0].isEmpty) {
+                if (!this.rowQueue[0].isEmpty) { // calcul de la couleur de rangée de briques
                     for (var x = 0; x < (this.game.config.width / 32) - 2; x++) {
                         
-                        var color = { r: 0, g: 0, b: 0 };
+                        var color = { r: 0, g: 0, b: 0 }; //si vous voulez mettez la couleur dont vous voulez
 
                         var freq = 0.35;
 
@@ -94,6 +97,7 @@ class SceneMain extends Phaser.Scene {
         }        
 	}
 
+    //Déplace les briques cassable 
 	moveBricksDown(amount) {
         amount = amount | 1;
 
@@ -108,6 +112,7 @@ class SceneMain extends Phaser.Scene {
         }
 	}
 
+    // saisie de la position Y de la rangée de briques la plus basse
 	getLowestRowY() {
         var lowest = 0;
 
@@ -121,8 +126,8 @@ class SceneMain extends Phaser.Scene {
         return lowest;        
 	}
 
-	create() {
-        this.sfx = {
+	create() { 
+        this.sfx = { //propritété qui stock nos objets sonores
             wallHit: this.sound.add("sndWallHit"),
             brickHit: [
                 this.sound.add("sndBrickHit0"),
@@ -139,19 +144,22 @@ class SceneMain extends Phaser.Scene {
             Phaser.Math.Between(-50, 50),
             300
         );
-
+        // 2 groupes pour stocker les murs et briques
         this.bricks = this.add.group();
         this.walls = this.add.group();
-
+        
+        // tableau de la file d'attente
         this.rowQueue = [];
         this.amountRowsGenerated = 0;
         this.amountBallHitPaddle = 0;
 
         this.createStage();
-
+        
+        // 2 propriétés  qui seront utilisées pour suivre le score et les vies utulisé
         this.score = 0;
         this.livesUsed = 0;
-
+        
+        // Création d'objets text pour afficher la partition et le nombre de vies utilisées.
         this.textScore = this.add.text(
             64,
             this.game.config.height - 24,
@@ -204,7 +212,7 @@ class SceneMain extends Phaser.Scene {
             loop: true
         });
         
-
+        // on utulise le collisionneur 
         this.physics.add.collider(this.ball, this.player, function(ball, player) {
             var dist = Phaser.Math.Distance.Between(player.x, 0, ball.x, 0) * 2;
 
@@ -234,11 +242,12 @@ class SceneMain extends Phaser.Scene {
             this.sfx.brickHit[Phaser.Math.Between(0, this.sfx.brickHit.length - 1)].play();            
         }, null, this);
 
+        //collisions entre la balle et les bricks
         this.physics.add.collider(this.ball, this.bricks, function(ball, brick) {
             if (brick.getData("isBreakable")) {
                 if (brick) {
                     this.addScore(brick.getData("pointValue"));
-        
+                
                     if (brick.getData("soundIndex") !== undefined) {
                         if (this.sfx.brickHit[brick.getData("soundIndex")] !== undefined) {
                             this.sfx.brickHit[brick.getData("soundIndex")].play();
@@ -250,11 +259,12 @@ class SceneMain extends Phaser.Scene {
             }
         }, null, this);
         
+        // collisionneur qui fera le rebond du mur
         this.physics.add.collider(this.ball, this.walls, function(ball, wall) {
             this.sfx.wallHit.play();
         }, null, this);
 	}
-
+// définir la position X du paddle sur x du pointeur 
 	update() {
         this.player.x = this.input.activePointer.x;
 
