@@ -182,6 +182,7 @@ class SceneMain extends Phaser.Scene {
                 align: "center"
             }
         );
+        
         this.textLivesUsed.setOrigin(0.5);
         
         this.rowGeneratorTimer = this.time.addEvent({

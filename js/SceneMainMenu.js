@@ -43,7 +43,7 @@ class SceneMainMenu extends Phaser.Scene {
             this.scene.start("SceneMain");
         }, this);
 
-        this.title = this.add.text(this.game.config.width * 0.5, 128, "BRICK BREAK", {
+        this.title = this.add.text(this.game.config.width * 0.5, 128, "BRICKyColor", {
             fontFamily: 'monospace',
             fontSize: 48,
             fontStyle: 'bold',
